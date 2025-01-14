@@ -1,0 +1,3 @@
+ pip install Flask-Migrate
+ pip install flask-cors
+

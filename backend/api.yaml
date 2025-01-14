@@ -1,0 +1,542 @@
+swagger: '2.0'
+info:
+  title: API Documentation
+  version: 1.0.0
+  description: APIs for this project
+tags:
+  - name: Authentication
+    description: Endpoints related to user authentication
+  - name: Courses
+    description: Endpoints related to courses
+  - name: Exams
+    description: Endpoints related to exams
+paths:
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user and generate JWT token
+      parameters:
+        - name: username
+          in: formData
+          required: true
+          type: string
+          description: The username of the user
+        - name: password
+          in: formData
+          required: true
+          type: string
+          description: The password of the user
+      responses:
+        '200':
+          description: Login successful
+          schema:
+            $ref: '#/definitions/LoginResponse'
+        '400':
+          description: Invalid credentials or missing parameters
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /courses:
+    get:
+      tags:
+        - Courses
+      summary: Retrieve all courses
+      description: Get a list of all courses.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: A list of courses
+          schema:
+            type: object
+            properties:
+              courses:
+                type: array
+                items:
+                  $ref: '#/definitions/Course'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - Bearer: []
+  /course/{course_id}/{parameter}:
+    get:
+      tags:
+        - Courses
+      summary: Get course detail by parameter
+      description: Retrieve specific course detail based on the parameter.
+      produces:
+        - application/json
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          type: integer
+          description: The ID of the course
+        - name: parameter
+          in: path
+          required: true
+          type: string
+          enum:
+            - about
+            - general_instruction
+            - please_read
+            - placement_activity
+          description: The specific course detail to retrieve
+      responses:
+        '200':
+          description: Course detail retrieved successfully
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+        '400':
+          description: Invalid parameter
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Course not found
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - Bearer: []
+  /course/{course_id}/week/{week}/demo:
+    get:
+      tags:
+        - Exams
+      summary: Get weekly demo
+      description: Retrieve demo for a specific course and week.
+      produces:
+        - application/json
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          type: integer
+          description: The ID of the course
+        - name: week
+          in: path
+          required: true
+          type: integer
+          description: The week number of the course
+      responses:
+        '200':
+          description: Demo retrieved successfully
+          schema:
+            type: object
+            properties:
+              course_id:
+                type: integer
+              week:
+                type: integer
+              demo:
+                type: string  # Adjust the type based on what 'demo' field actually is
+        '404':
+          description: No demo found for the given course and week
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - Bearer: []
+  /course/{course_id}/week/{week}/exam/{grade}:
+    get:
+      tags:
+        - Exams
+      summary: Get weekly exam questions
+      description: Retrieve exam questions for a specific course and week, including the grading status.
+      produces:
+        - application/json
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          type: integer
+          description: The ID of the course
+        - name: week
+          in: path
+          required: true
+          type: integer
+          description: The week number of the course
+        - name: grade
+          in: path
+          required: true
+          type: integer
+          description: Grading status of the exam (1 for graded, 0 for non-graded)
+      responses:
+        '200':
+          description: Exam questions retrieved successfully
+          schema:
+            type: object
+            properties:
+              course_id:
+                type: integer
+              week:
+                type: integer
+              exam_id:
+                type: integer
+              exam_name:
+                type: string
+              exam_description:
+                type: string
+              exam_end_time:
+                type: string
+              questions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    question_id:
+                      type: integer
+                    question_text:
+                      type: string
+                    correct_answer_id:
+                      type: integer
+                    options:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          option_id:
+                            type: integer
+                          option_text:
+                            type: string
+        '404':
+          description: No exam found for the given course and week
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - Bearer: []
+
+  /course/{course_id}/week/{week}/assignmentexam/{grade}:
+    get:
+      tags:
+        - Exams
+      summary: Get weekly assignment exam questions
+      description: Retrieve assignment exam questions for a specific course, week, and grading status.
+      produces:
+        - application/json
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          type: integer
+          description: The ID of the course
+        - name: week
+          in: path
+          required: true
+          type: integer
+          description: The week number of the course
+        - name: grade
+          in: path
+          required: true
+          type: integer
+          description: Grading status of the assignment exam (1 for graded, 0 for non-graded)
+      responses:
+        '200':
+          description: Assignment exam questions retrieved successfully
+          schema:
+            type: object
+            properties:
+              course_id:
+                type: integer
+              week:
+                type: integer
+              exam_id:
+                type: integer
+              exam_name:
+                type: string
+              exam_description:
+                type: string
+              exam_end_time:
+                type: string
+              questions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    question_id:
+                      type: integer
+                    question_text:
+                      type: string
+                    options:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          option_id:
+                            type: integer
+                          sample_input:
+                            type: string
+                          expected_output:
+                            type: string
+        '404':
+          description: No assignment exam found for the given course and week
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+      security:
+        - Bearer: []
+
+  /submit-answers:
+    post:
+      tags:
+        - Exams
+      summary: Submit user answers and calculate score
+      description: Submit user answers for an exam, calculate the score, and save the results.
+      consumes:
+        - application/json
+      parameters:
+        - name: course_id
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              course_id:
+                type: integer
+                description: The ID of the course
+              exam_id:
+                type: integer
+                description: The ID of the exam
+              user_answers:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    question_id:
+                      type: integer
+                      description: The ID of the question
+                    selected_option_id:
+                      type: integer
+                      description: The ID of the selected option
+                description: List of user answers for the exam
+      responses:
+        '200':
+          description: User answers submitted successfully and score calculated
+          schema:
+            type: object
+            properties:
+              score:
+                type: integer
+                description: The number of correct answers
+              percentage:
+                type: number
+                format: float
+                description: The percentage score
+        '400':
+          description: Bad request, missing required fields or invalid data
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized, authentication required
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - Bearer: []
+  /usergrades:
+    get:
+      tags:
+        - Exams
+      summary: Get the latest exam results for each exam for the authenticated user
+      description: Retrieve the latest exam results for each exam for the authenticated user.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Latest exam results retrieved successfully
+          schema:
+            type: object
+            properties:
+              grades:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    exam_id:
+                      type: integer
+                    exam_name:
+                      type: string
+                    score:
+                      type: number
+                      format: float
+                    percentage:
+                      type: number
+                      format: float
+        '404':
+          description: No exam results found for the user or user not found
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - Bearer: []
+  /submit-code:
+    post:
+      tags:
+        - User Assignment
+      summary: Submit user code for evaluation assignment
+      description: Allows users to submit their code for a specific question and get the evaluation results.
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                description: The code to be executed
+              question_id:
+                type: integer
+                description: The ID of the question to which the code is related
+            required:
+              - code
+              - question_id
+      responses:
+        '200':
+          description: Successfully submitted and evaluated the code
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    input:
+                      type: object
+                    expected_output:
+                      type: string
+                    actual_output:
+                      type: string
+                    is_correct:
+                      type: boolean
+        '400':
+          description: Missing code or question_id in the request
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        '404':
+          description: Question ID not found or no options for the given question
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        '500':
+          description: Error executing user code
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              traceback:
+                type: string
+      security:
+        - Bearer: []
+
+  /user-assignment-result:
+    get:
+      tags:
+        - User Assignment
+      summary: Retrieve all assignment results for the authenticated user
+      description: Fetches all assignment results for the currently authenticated user.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved user assignment results
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: The unique identifier of the result entry.
+                user_id:
+                  type: integer
+                  description: The unique identifier of the user.
+                question_id:
+                  type: integer
+                  description: The unique identifier of the question.
+                exam_id:
+                  type: integer
+                  description: The unique identifier of the exam.
+                result_json:
+                  type: string
+                  description: JSON string containing the result data.
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 'User not found'
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              traceback:
+                type: string
+      security:
+        - Bearer: []
+       
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: |
+      For accessing the protected API resources, you must include a valid JWT token in the `Authorization` header.
+      The JWT token should be prefixed with `Bearer`, e.g. `Bearer <JWT_TOKEN>`.
+definitions:
+  Course:
+    type: object
+    properties:
+      course_id:
+        type: integer
+        description: The ID of the course
+      course_name:
+        type: string
+        description: The name of the course
+  Error:
+    type: object
+    properties:
+      message:
+        type: string
+      status:
+        type: string
+  LoginResponse:
+    type: object
+    properties:
+      access_token:
+        type: string
+        description: The JWT access token
+      message:
+        type: string
+        description: Status message
+      status:
+        type: string
+        description: Status of the request

@@ -1,0 +1,8 @@
+sudo snap install vue
+vue create my-project
+npm install axios
+npm install vuex
+npm install vue-youtube-embed
+npm install vue-youtube
+
+
