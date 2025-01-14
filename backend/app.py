@@ -14,6 +14,8 @@ import sqlite3
 from sqlite3 import dbapi2 as sqlite
 from dotenv import load_dotenv
 
+load_dotenv()
+
 app = Flask(__name__)
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -35,9 +37,5 @@ swagger = Swagger(app, template_file='api.yaml')
 from routes import *
 from model import *
 
-def configure():
-    load_dotenv()
-
 if __name__ == '__main__':
-    configure()
     app.run(port=5000)

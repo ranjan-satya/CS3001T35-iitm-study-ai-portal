@@ -1,0 +1,5 @@
+services:
+  cs3001t35-iitm-study-ai-portal-frontend:
+    image: satyaranjaniitm/cs3001t35-iitm-study-ai-portal-frontend:1.0.0
+    ports:
+      - '80:80'

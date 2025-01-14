@@ -10,9 +10,11 @@ from model import  User,Course,Exam,ExamQuestion,QuestionOption,UserAnswer,UserE
 import json
 import sys
 import io
+import os
 import traceback
 from datetime import datetime
 from ai import get_ai_response,get_ai_response_code, get_ai_response_feedback
+
 
 @app.route("/genaicode",methods=["POST"])
 @jwt_required()

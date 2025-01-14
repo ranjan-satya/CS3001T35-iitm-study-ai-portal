@@ -1,0 +1,7 @@
+services:
+  cs3001t35-iitm-study-ai-portal-backend:
+    image: satyaranjaniitm/cs3001t35-iitm-study-ai-portal-backend:1.0.0
+    ports:
+      - '5000:5000'
+    env_file:
+      - .env
